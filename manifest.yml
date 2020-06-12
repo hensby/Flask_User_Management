@@ -1,4 +1,4 @@
   applications:
   - name: Hengchao_wang_flask
     random-route: true
-    memory: 256M
+    memory: 64M

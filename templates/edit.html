@@ -11,7 +11,7 @@
 
 </head>
 <div class="container">
-    <h1>Hengchao Wang assignment1</h1>
+    <h1>Hengchao Wang quiz1</h1>
     <h2>1001778272</h2>
     <a href="/home">back</a>
 </div>
@@ -21,18 +21,21 @@
     <form action="/home" method="post" enctype="multipart/form-data">
         <input name="type" value="edit" style="display:none;">
         <input name="Name" value="{{ result[0]}}" style="display:none;">
+        <input name="ID" value="{{ result[1]}}" style="display:none;">
+        <input name="Room" value="{{ result[2]}}" style="display:none;">
         <input name="Picture" value="{{ result[4]}}" style="display:none;">
+
         <th>Name</th>
         <input type="text" class="form-control" placeholder="{{ result[0] }}" name="Name" style="width:60%" value="{{ result[0]}}" disabled>
-        <th>Grade</th>
-        <input type="text" class="form-control" placeholder="{{ result[1] }}" name="Salary" style="width:60%" value="{{ result[1]}}">
+        <th>ID</th>
+        <input type="text" class="form-control" placeholder="{{ result[1] }}" name="ID" style="width:60%" value="{{ result[1]}}" disabled>
         <th>Room</th>
-        <input type="text" class="form-control" placeholder="{{ result[2] }}" name="Room" style="width:60%" value="{{ result[2]}}">
+        <input type="text" class="form-control" placeholder="{{ result[2] }}" name="Room" style="width:60%" value="{{ result[2]}}" disabled>
         <th>State</th>
-        <input type="text" class="form-control" placeholder="{{ result[3] }}" name="Telnum" style="width:60%" value="{{ result[3]}}">
-        <th>Keywords</th>
-        <input type="text" class="form-control" placeholder="{{ result[5] }}" name="Keywords" style="width:60%" value="{{ result[5]}}">
-        <input type="file" size="300" name="files" accept="image/*"/>
+        <input type="text" class="form-control" placeholder="{{ result[3] }}" name="State" style="width:60%" value="{{ result[3]}}">
+        <th>Caption</th>
+        <input type="text" class="form-control" placeholder="{{ result[5] }}" name="Caption" style="width:60%" value="{{ result[5]}}">
+        <input type="file" size="300" name="files" accept="image/*", onchange="checkinfo(this)"/>
         <span class="input-group-btn">
             <button class="btn btn-default" type="submit">save</button>
         </span>
@@ -40,3 +43,11 @@
 </div>
 </body>
 </html>
+<script>
+function checkinfo(obj){
+    var len = obj.files[0].size
+    if(len > 2 * 1024 * 1024) {
+        alert("The picture cannot large than 2M");
+    }
+}
+</script>

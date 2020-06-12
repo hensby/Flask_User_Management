@@ -16,85 +16,65 @@ app.config['UPLOAD_FOLDER'] = PIC_folder
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = timedelta(seconds=1)
 all_data_dict = {}
 
-
 def updateData():
     with open('data/names.csv', encoding='utf8') as r:
         d = csv.reader(r, delimiter=',', skipinitialspace=True)
-
+        name = []
+        new_data = {}
         for k, line in enumerate(d):
             if k == 0:
                 continue
-            all_data_dict[str(k)] = line
-    return k
+            if line[0] not in new_data.keys():
+                new_data[line[0]] = line
+                name.append(line[0])
+    writeCSV(new_data)
+    return new_data
 
 
 @app.route('/', methods=['POST', 'GET'])
 @app.route('/home', methods=['POST', 'GET'])
 def home():
     if request.method == 'POST':
-        updateData()
+        all_data_dict = updateData()
         i = 0
-        if request.form['type'] == 'searchByRoom':
+        if request.form['type'] == 'searchByState':
             print(request.form)
             tmp_data = {}
-            if request.form['room'] == '':
+            if request.form['State'] == '':
                 return render_template('home.html', result=all_data_dict)
             for _, all_data_item in all_data_dict.items():
-                if all_data_item[2] == request.form['room']:
+                if all_data_item[3] == request.form['State']:
                     tmp_data[i] = all_data_item
                     i += 1
             # print(tmp_data)
             return render_template('home.html', result=tmp_data)
-        if request.form['type'] == 'searchByGrade':
+        if request.form['type'] == 'searchByName':
             print(request.form)
             tmp_data = {}
-            if request.form['max'] == "" and request.form['min'] == "":
+            if request.form['Name'] == '':
                 return render_template('home.html', result=all_data_dict)
-            if is_number(request.form['max']):
-                max = int(request.form['max'])
-            else:
-                max = sys.maxsize
-            if is_number(request.form['min']):
-                min = int(request.form['min'])
-            else:
-                min = 0
-
             for _, all_data_item in all_data_dict.items():
-                if all_data_item[1] and min <= int(all_data_item[1]) <= max:
+                if all_data_item[0].lower() == request.form['Name'].lower():
                     tmp_data[i] = all_data_item
-                    # print(tmp_data[i])
                     i += 1
-            # print(tmp_data)
-            return render_template('home.html', result=tmp_data)
-        if request.form['type'] == 'delete':
-            print(request.form)
-            tmp_data = {}
-            for _, all_data_item in all_data_dict.items():
-                # print(all_data_item[0], request.form['deleteValueName'])
-                tmp = request.form['deleteValueName'].split(',')
-                if all_data_item[0] == tmp[0] and all_data_item[1] == tmp[1]:
-                    print(1)
-                    path = os.path.join(PIC_folder, 'static', all_data_item[4])
-                    if os.path.exists(path):
-                        os.remove(path)
-                    else:
-                        print("no")
-                    continue
-                tmp_data[i] = all_data_item
-                i += 1
-                writeCSV(tmp_data)
             return render_template('home.html', result=tmp_data)
         if request.form['type'] == 'edit':
             print(request.form)
             tmp_data = {}
+            upload_file = request.files["files"]
+            size = len(upload_file.read())
+            upload_file.seek(0)
+            if 2097152 < size:
+                print("larger than 2M")
+                return render_template('home.html', result=all_data_dict)
             for _, all_data_item in all_data_dict.items():
                 if all_data_item[0].lower() == request.form['Name'].lower():
                     print(all_data_item)
                     tmp = []
                     tmp.append(request.form["Name"])
-                    tmp.append(request.form["Salary"])
+                    tmp.append(request.form["ID"])
                     tmp.append(request.form["Room"])
-                    tmp.append(request.form["Telnum"])
+                    tmp.append(request.form["State"])
                     # tmp.append(request.form["Picture"])
                     upload_file = request.files["files"]
                     size = len(upload_file.read())
@@ -115,7 +95,7 @@ def home():
                     else:
                         print(22222)
                         tmp.append(all_data_item[4])
-                    tmp.append(request.form["Keywords"])
+                    tmp.append(request.form["Caption"])
                     tmp_data[i] = tmp
                     i += 1
                     print(tmp)
@@ -124,54 +104,8 @@ def home():
                 i += 1
                 writeCSV(tmp_data)
             return render_template('home.html', result=tmp_data)
-        if request.form['type'] == 'add':
-            print(request.form)
-            for _, all_data_item in all_data_dict.items():
-                if all_data_item[0].lower() == request.form['Name'].lower():
-                    return render_template('home.html', result=all_data_dict)
-            tmp = []
-            tmp_data = {}
-            if request.form["Name"] != "":
-                tmp.append(request.form["Name"])
-            else:
-                tmp.append("")
-            if request.form["Salary"] != "":
-                tmp.append(request.form["Salary"])
-            else:
-                tmp.append("")
-            if request.form["Room"] != "":
-                tmp.append(request.form["Room"])
-            else:
-                tmp.append("")
-            if request.form["Telnum"] != "":
-                tmp.append(request.form["Telnum"])
-            else:
-                tmp.append("")
-            # tmp.append(request.form["Picture"])
-            upload_file = request.files["files"]
-            size = len(upload_file.read())
-            upload_file.seek(0)
-            if size > 2:
-                # if allowed_file(img.filename):
-                img = request.files.get('files')
-                # if allowed_file(img.filename):
-                flag = str(random.randint(0, 999))
-                path = "static/" + request.form["Name"] + flag + ".jpg"
-                img.save(path)
-                tmp.append(request.form["Name"] + flag + ".jpg")
-            else:
-                print(22222)
-                tmp.append("")
-            if request.form["Keywords"] != "":
-                tmp.append(request.form["Keywords"])
-            else:
-                tmp.append("")
-            print(tmp)
-            all_data_dict["tmp"] = tmp
-            writeCSV(all_data_dict)
-            return render_template('home.html', result=all_data_dict)
     else:
-        updateData()
+        all_data_dict = updateData()
         return render_template('home.html', result=all_data_dict)
 
 
@@ -215,7 +149,7 @@ def writeCSV(tmp_data):
 
     csv_writer = csv.writer(f)
 
-    csv_writer.writerow(["Name", "Grade", "Room", "State", "Picture", "Keywords"])
+    csv_writer.writerow(["Name", "Grade", "Room", "State", "Picture", "Caption"])
 
     for _, item in tmp_data.items():
         print(item)

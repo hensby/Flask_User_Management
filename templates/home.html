@@ -11,18 +11,34 @@
 
 </head>
 <div class="container">
-    <h1>Hengchao Wang assignment1</h1>
+    <h1>Hengchao Wang quiz1</h1>
+    <td><img style="width:20%;" src="/static/homepage.jpg"></td>
     <h2>1001778272</h2>
 </div>
 <body>
 
 <div class="container">
+
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="input-group">
+                <meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+                <input type="text" name="text1" value="" id="text1" class="form-control" placeholder="Number one" style="width:30%;"/>
+                <input type="text" name="text2" value="" id="text2" class="form-control" placeholder="Number two" style="width:30%;"/>
+                <input type="text" name="result" value="" readonly="true" id="result" class="form-control" placeholder="Sum" style="width:30%;"/>
+                <input type="button" class="btn btn-default"value="Add" onclick="getSum();"/>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="container">
     <form action="/home" method="post">
-        <input name="type" value="searchByRoom" style="display:none;">
+        <input name="type" value="searchByState" style="display:none;">
         <div class="row">
             <div class="col-lg-6">
                 <div class="input-group">
-                    <input type="text" class="form-control" placeholder="Input Room" name="room">
+                    <input type="text" class="form-control" placeholder="Input state" name="State">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">search</button>
                     </span>
@@ -34,15 +50,12 @@
 
 <div class="container">
     <form action="/home" method="post">
-        <input name="type" value="searchByGrade" style="display:none;">
+        <input name="type" value="searchByName" style="display:none;">
         <div class="row">
             <div class="col-lg-6">
                 <div class="input-group">
-                    <input type="text" class="form-control" style="width:50%;" placeholder="input min grade"
-                           name="min">
-                    <input type="text" class="form-control" style="width:50%;" placeholder="input max grade"
-                           name="max">
-                    {#                    <input type="text" class="form-control" style="width:40%;" placeholder="input word" name="word">#}
+                    <input type="text" class="form-control" placeholder="Input name"
+                           name="Name">
                     <span class="input-group-btn">
                         <button class="btn btn-default" type="submit">search</button>
                     </span>
@@ -50,35 +63,20 @@
             </div><!-- /.col-lg-6 -->
         </div>
     </form>
-    <a href="/all_pictures">all pictures</a>
+<!--    <a href="/all_pictures">all pictures</a>-->
 </div>
 
-{#<div class="container">#}
-{#    <form action="/add_user" method="post">#}
-{#        <input name="type" value="add" style="display:none;">#}
-{#        <div class="row">#}
-{#            <div class="col-lg-6">#}
-{#                <div class="input-group">#}
-{#                    <span class="input-group-btn">#}
-{#                        <button class="btn btn-default" type="submit">Add New User</button>#}
-{#                    </span>#}
-{#                </div>#}
-{#            </div>#}
-{#        </div>#}
-{#    </form>#}
-{#</div>#}
 
-{#<h1>&nbsp;</h1>#}
 <div class="container">
 
     <table class="table" border="0" cellspacing="0" width="2000">
         {#        <caption><a class="btn btn-default btn-primary" href="/addview">Add</a></caption>#}
         <tr style=font-size:25px>
             <th>Name</th>
-            <th>Grade</th>
+            <th>ID</th>
             <th>Room</th>
             <th>State</th>
-            <th>Keywords</th>
+            <th>Caption</th>
             <th>Picture</th>
         </tr>
         {% for rel in result.values() %}
@@ -91,11 +89,6 @@
                     <td>{{ rel[3] }}</td>
                     <td>{{ rel[5] }}</td>
                     <td><img style="width:20%;" src="{{ url_for('static', filename=rel[4]) }}"></td>
-{#                    <td>#}
-{#                        <button class="btn btn-default" type="submit" name="deleteValueName"#}
-{#                                value="{{ rel[0] + "," + rel[1] }}">Delete#}
-{#                        </button>#}
-{#                    </td>#}
                     <td>
                         <button class="btn btn-default" type="submit" formaction="/edit_page" name="edit"
                                 value="{{ rel }}">Edit
@@ -108,10 +101,15 @@
             no picture available
         {% endif %}
     </table>
-    <a href="/all_pictures">all pictures</a>
-
 </div>
-
 
 </body>
 </html>
+
+<script>
+    function getSum() {
+    var n1 = document.getElementById("text1").value;
+    var n2 = document.getElementById("text2").value;
+    document.getElementById("result").value = parseInt(n1)+parseInt(n2);
+    }
+</script>
